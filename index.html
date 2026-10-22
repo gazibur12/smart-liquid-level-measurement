@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An Arduino UNO based ultrasonic liquid level measurement project with OLED display and LED level indicators.">
+  <meta name="theme-color" content="#07111f">
+  <title>Smart Liquid Level Monitor | Engineering Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-glow glow-one"></div><div class="background-glow glow-two"></div>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Smart Liquid Level Monitor home">
+      <span class="brand-mark">≈</span><span>LEVEL<span class="brand-light">LAB</span></span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#overview">Overview</a><a href="#how-it-works">How it works</a><a href="#gallery">Gallery</a><a href="#code">Code</a>
+      <a class="nav-cta" href="#demo">Try the demo <span>↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section-wrap" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> ARDUINO • ULTRASONIC SENSING • REAL-TIME DISPLAY</div>
+        <h1>Measure the level.<br><span>Know what’s inside.</span></h1>
+        <p class="hero-lede">A compact liquid level monitoring prototype that uses ultrasonic distance measurement to estimate container fill level and display the result in real time.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#overview">Explore the project <span>↓</span></a>
+          <a class="button button-secondary" href="#gallery">View build photos</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>9.2 <small>cm</small></strong><span>Container height</span></div>
+          <div><strong>3 <small>LEDs</small></strong><span>Level indicators</span></div>
+          <div><strong>1 <small>OLED</small></strong><span>Live readout</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="sensor-card">
+          <div class="sensor-top"><span class="tiny-label">LIVE LEVEL INTERFACE</span><span class="signal"><i></i> SENSOR READY</span></div>
+          <div class="mini-screen">
+            <div class="screen-heading"><span>LIQUID LEVEL</span><span class="screen-icon">◉</span></div>
+            <div class="screen-rule"></div>
+            <div class="screen-reading"><span id="heroLevel">6.1</span><small>cm</small></div>
+            <div class="screen-fill-row"><span>FILL PERCENTAGE</span><strong id="heroPercent">66%</strong></div>
+            <div class="screen-bar"><span id="heroBar"></span></div>
+            <div class="screen-status"><span class="status-led yellow" id="heroLed"></span><span id="heroStatus">MEDIUM LEVEL</span></div>
+          </div>
+          <div class="sensor-bottom"><span>HC-SR04</span><span>ARDUINO UNO</span><span>OLED SPI</span></div>
+        </div>
+        <div class="float-tag tag-top"><span class="tag-symbol">⌁</span><span><b>Non-contact sensing</b><small>Ultrasonic echo timing</small></span></div>
+        <div class="float-tag tag-bottom"><span class="tag-symbol">▥</span><span><b>Live fill estimate</b><small>Height + percentage</small></span></div>
+      </div>
+    </section>
+
+    <section class="trust-strip" aria-label="Project components">
+      <div><span class="strip-icon">◈</span> Arduino UNO</div><div><span class="strip-icon">⌁</span> HC-SR04 sensor</div><div><span class="strip-icon">▣</span> 0.96″ OLED display</div><div><span class="strip-icon">●</span> Three LED indicators</div>
+    </section>
+
+    <section class="section-wrap section" id="overview">
+      <div class="section-heading">
+        <div><span class="eyebrow">01 / PROJECT OVERVIEW</span><h2>From distance to <span>liquid level.</span></h2></div>
+        <p>The sensor measures the air gap between its face and the liquid surface. The controller uses that distance to estimate how much of the container is filled.</p>
+      </div>
+      <div class="overview-grid">
+        <article class="info-card featured-card">
+          <div class="card-icon cyan-icon">⌁</div><span class="card-kicker">THE IDEA</span>
+          <h3>Measure without contact</h3><p>The HC-SR04 sends an ultrasonic pulse and measures the time taken for the echo to return from the liquid surface.</p>
+          <div class="card-foot">01 <span>ULTRASONIC DISTANCE</span></div>
+        </article>
+        <article class="info-card">
+          <div class="card-icon violet-icon">⌗</div><span class="card-kicker">THE CALCULATION</span>
+          <h3>Convert distance to level</h3><p>Liquid height is calculated by subtracting the measured air gap from the known container height.</p>
+          <div class="formula">Liquid level = 9.2 cm − air gap</div>
+        </article>
+        <article class="info-card">
+          <div class="card-icon green-icon">▤</div><span class="card-kicker">THE OUTPUT</span>
+          <h3>Display useful information</h3><p>The OLED shows liquid height and estimated fill percentage. LEDs provide a quick visual indication of the level.</p>
+          <div class="card-foot">03 <span>DISPLAY + ALERTS</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-wrap section workflow-section" id="how-it-works">
+      <div class="section-heading">
+        <div><span class="eyebrow">02 / WORKING PRINCIPLE</span><h2>Four steps. <span>One clear reading.</span></h2></div>
+        <p>A simple sensing chain connects the physical liquid surface to a readable digital output.</p>
+      </div>
+      <div class="workflow">
+        <div class="workflow-line"></div>
+        <article class="step"><div class="step-number">01</div><div class="step-icon">⌁</div><h3>Send pulse</h3><p>Trig activates the HC-SR04 ultrasonic transmitter.</p></article>
+        <article class="step"><div class="step-number">02</div><div class="step-icon">↩</div><h3>Measure echo</h3><p>Echo timing estimates the distance to the liquid surface.</p></article>
+        <article class="step"><div class="step-number">03</div><div class="step-icon">∑</div><h3>Calculate level</h3><p>Arduino calculates liquid height and fill percentage.</p></article>
+        <article class="step"><div class="step-number">04</div><div class="step-icon">▣</div><h3>Show status</h3><p>The OLED and LEDs present the result at a glance.</p></article>
+      </div>
+      <div class="equation-panel">
+        <div><span class="eyebrow">CALCULATION</span><h3>Fill percentage</h3><p>Assuming a container height of 9.2 cm and the sensor mounted at the top.</p></div>
+        <div class="equation"><span>Liquid height</span><strong>9.2 − measured air gap</strong><span>Fill percentage</span><strong>(liquid height ÷ 9.2) × 100</strong></div>
+      </div>
+    </section>
+
+    <section class="section-wrap section demo-section" id="demo">
+      <div class="section-heading">
+        <div><span class="eyebrow">03 / INTERACTIVE DEMO</span><h2>Move the level. <span>See the response.</span></h2></div>
+        <p>This is a browser-based simulation of the project logic—not a live connection to your physical Arduino.</p>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-control panel">
+          <div class="panel-heading"><div><span class="eyebrow">SIMULATED INPUT</span><h3>Liquid level control</h3></div><span class="demo-badge">DEMO MODE</span></div>
+          <label for="levelSlider">Liquid height <strong><span id="sliderValue">6.1</span> cm</strong></label>
+          <input id="levelSlider" type="range" min="0" max="9.2" step="0.1" value="6.1">
+          <div class="range-labels"><span>Empty · 0 cm</span><span>Full · 9.2 cm</span></div>
+          <div class="preset-buttons"><button data-level="1.5">Low</button><button data-level="4.2">Medium</button><button data-level="7.5">High</button><button data-level="9.2">Full</button></div>
+          <div class="demo-note"><span>ⓘ</span><p>Change the slider or select a preset to simulate the sensor reading and LED thresholds.</p></div>
+        </div>
+        <div class="demo-output panel">
+          <div class="output-top"><span>SIMULATED OLED OUTPUT</span><span class="output-dot"></span></div>
+          <div class="demo-screen">
+            <div class="demo-screen-title">LIQUID LEVEL <span>●</span></div>
+            <div class="demo-large"><span id="demoLevel">6.1</span><small>cm</small></div>
+            <div class="demo-percent-line"><span>FILL</span><strong id="demoPercent">66%</strong></div>
+            <div class="demo-progress"><span id="demoProgress"></span></div>
+            <div class="demo-state"><span class="status-led yellow" id="demoLed"></span><strong id="demoStatus">MEDIUM LEVEL</strong></div>
+          </div>
+          <div class="led-panel">
+            <div class="led-item"><span class="physical-led red" id="redLamp"></span><span>RED</span><small>Below 30%</small></div>
+            <div class="led-item"><span class="physical-led yellow" id="yellowLamp"></span><span>YELLOW</span><small>30%–&lt;75%</small></div>
+            <div class="led-item"><span class="physical-led green" id="greenLamp"></span><span>GREEN</span><small>75% or above</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-wrap section gallery-section" id="gallery">
+      <div class="section-heading">
+        <div><span class="eyebrow">04 / BUILD GALLERY</span><h2>Built, wired, <span>and tested.</span></h2></div>
+        <p>Photos from the physical prototype, including the circuit, OLED output, serial readings, and container test.</p>
+      </div>
+      <div class="gallery-grid">
+        <button class="gallery-item gallery-large" data-image="assets/project-setup.jpg" data-caption="Assembled prototype with Arduino UNO, sensor wiring, LEDs and OLED display">
+          <img src="assets/project-setup.jpg" alt="Assembled Arduino liquid level measurement project" loading="lazy"><span class="gallery-overlay"><span>01 / PROTOTYPE</span><b>Project setup <i>↗</i></b></span>
+        </button>
+        <button class="gallery-item" data-image="assets/oled-display.jpg" data-caption="OLED display showing liquid height and estimated fill percentage">
+          <img src="assets/oled-display.jpg" alt="OLED displaying liquid height and fill percentage" loading="lazy"><span class="gallery-overlay"><span>02 / DISPLAY</span><b>OLED readout <i>↗</i></b></span>
+        </button>
+        <button class="gallery-item" data-image="assets/arduino-serial-monitor.jpg" data-caption="Arduino IDE Serial Monitor showing repeated liquid level measurements">
+          <img src="assets/arduino-serial-monitor.jpg" alt="Arduino IDE serial monitor showing liquid level readings" loading="lazy"><span class="gallery-overlay"><span>03 / READINGS</span><b>Serial monitor <i>↗</i></b></span>
+        </button>
+        <button class="gallery-item" data-image="assets/complete-circuit.jpg" data-caption="Arduino UNO, breadboard, OLED and LED circuit wiring">
+          <img src="assets/complete-circuit.jpg" alt="Complete Arduino and breadboard circuit" loading="lazy"><span class="gallery-overlay"><span>04 / HARDWARE</span><b>Circuit assembly <i>↗</i></b></span>
+        </button>
+        <button class="gallery-item" data-image="assets/container-test.jpg" data-caption="Container used for testing the liquid level measurement setup">
+          <img src="assets/container-test.jpg" alt="Container used for liquid level measurement test" loading="lazy"><span class="gallery-overlay"><span>05 / TESTING</span><b>Test container <i>↗</i></b></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="section-wrap section components-section">
+      <div class="section-heading">
+        <div><span class="eyebrow">05 / COMPONENTS</span><h2>What powers <span>the prototype.</span></h2></div>
+      </div>
+      <div class="component-list">
+        <div class="component-row"><span class="component-index">01</span><div class="component-symbol">▦</div><div><h3>Arduino UNO</h3><p>Reads sensor timing, calculates the level and controls outputs.</p></div><span class="component-type">MICROCONTROLLER</span></div>
+        <div class="component-row"><span class="component-index">02</span><div class="component-symbol">⌁</div><div><h3>HC-SR04 ultrasonic sensor</h3><p>Measures the air gap above the liquid surface.</p></div><span class="component-type">DISTANCE SENSOR</span></div>
+        <div class="component-row"><span class="component-index">03</span><div class="component-symbol">▣</div><div><h3>0.96-inch OLED</h3><p>Displays liquid height, fill percentage and status.</p></div><span class="component-type">DISPLAY</span></div>
+        <div class="component-row"><span class="component-index">04</span><div class="component-symbol">●</div><div><h3>Red, yellow and green LEDs</h3><p>Provide low, medium and high level visual indication.</p></div><span class="component-type">STATUS OUTPUT</span></div>
+      </div>
+    </section>
+
+    <section class="section-wrap section code-section" id="code">
+      <div class="code-copy"><span class="eyebrow">06 / PROJECT LOGIC</span><h2>Simple logic.<br><span>Clear feedback.</span></h2><p>The controller converts the measured distance into a liquid height and percentage, then selects the LED based on the fill thresholds.</p><a class="button button-secondary" href="#demo">Try the interactive demo <span>↗</span></a></div>
+      <div class="code-window"><div class="code-title"><div class="window-dots"><i></i><i></i><i></i></div><span>level_logic.ino</span><button id="copyCode" class="copy-button">Copy logic</button></div><pre><code>liquidLevel = containerHeight - distance;
+fillPercentage =
+  (liquidLevel / containerHeight) * 100.0;
+
+if (fillPercentage >= 75) {
+  greenLED = HIGH;
+} else if (fillPercentage >= 30) {
+  yellowLED = HIGH;
+} else {
+  redLED = HIGH;
+}</code></pre><div class="code-foot"><span>●</span> Thresholds used in this prototype</div></div>
+    </section>
+
+    <section class="section-wrap section future-section">
+      <div class="future-card"><div><span class="eyebrow">NEXT STEPS</span><h2>Room to build on.</h2><p>This prototype is a starting point for learning sensor interfacing, embedded programming, and process measurement. Future improvements could include calibration, filtering unstable readings, alarms, data logging, or pump control.</p></div><div class="future-chips"><span>Sensor calibration</span><span>Noise filtering</span><span>Alarm integration</span><span>Data logging</span><span>Automatic pump control</span></div></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand" href="#home"><span class="brand-mark">≈</span><span>LEVEL<span class="brand-light">LAB</span></span></a>
+    <p>A hands-on liquid level measurement project.</p>
+    <a href="#home" class="back-top">Back to top ↑</a>
+    <span class="footer-note">Designed to document a learning project • 2026</span>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Expanded project photo">
+    <button class="lightbox-close" aria-label="Close image">×</button><img id="lightboxImage" src="" alt=""><p id="lightboxCaption"></p>
+  </div>
+  <div class="toast" id="toast" role="status">Copied to clipboard</div>
+  <script src="script.js"></script>
+</body>
+</html>
